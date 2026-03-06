@@ -1,6 +1,8 @@
 # Supersharkz Charge Management Subsystem
 Built with React, TypeScript, Vite, and Tailwind CSS.
 
+DEMO: https://supersharkz-charges-ashraf.netlify.app/
+
 ## How to Run
 
 1. Clone the repository
