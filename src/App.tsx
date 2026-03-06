@@ -15,6 +15,7 @@ export default function App() {
   const [chargeToDelete, setChargeToDelete] = useState<string | null>(null);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const totalOutstanding = charges.reduce((sum, charge) => sum + (charge.charge_amount - charge.paid_amount), 0);
   const selectedOutstanding = charges
     .filter(c => selectedIds.includes(c.charge_id!))
@@ -30,12 +31,29 @@ export default function App() {
     setIsFormOpen(true);
   };
 
-  const handleOpenDelete = (chargeId: string) => {
-    setChargeToDelete(chargeId);
+  const handleOpenDelete = (chargeId: string) => { 
+    setChargeToDelete(chargeId); 
+    setIsBulkDeleting(false);
+    setIsDeleteOpen(true); 
+  };
+
+  const handleBulkDeleteClick = () => {
+    setIsBulkDeleting(true);
     setIsDeleteOpen(true);
   };
-  
 
+  const handleConfirmDelete = () => {
+    if (isBulkDeleting) {
+      bulkDeleteCharges(selectedIds);
+      setSelectedIds([]);
+    } else if (chargeToDelete) {
+      deleteCharge(chargeToDelete);
+    }
+    setIsDeleteOpen(false);
+    setIsBulkDeleting(false);
+    setChargeToDelete(null);
+  };
+  
   const handleFormSubmit = (data: Charge) => {
     if (editingCharge) {
       updateCharge({ ...data, charge_id: editingCharge.charge_id });
@@ -61,12 +79,7 @@ export default function App() {
     else setSelectedIds(charges.map(c => c.charge_id!));
   };
 
-  const handleBulkDelete = () => {
-    if (window.confirm(`Are you sure you want to delete ${selectedIds.length} charges?`)) {
-      bulkDeleteCharges(selectedIds);
-      setSelectedIds([]);
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-100 via-slate-50 to-slate-100 font-sans selection:bg-blue-200 selection:text-blue-900">
@@ -115,7 +128,7 @@ export default function App() {
                   </div>
 
                   <button 
-                    onClick={handleBulkDelete}
+                    onClick={handleBulkDeleteClick}
                     className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full text-sm font-bold transition-colors shadow-lg shadow-rose-500/20"
                   >
                     <Trash2 size={16} />
@@ -173,9 +186,14 @@ export default function App() {
 
       <DeleteModal
         isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onConfirm={() => chargeToDelete && deleteCharge(chargeToDelete)}
+        onClose={() => { 
+          setIsDeleteOpen(false); 
+          setIsBulkDeleting(false); 
+          setChargeToDelete(null); 
+        }}
+        onConfirm={handleConfirmDelete}
         chargeId={chargeToDelete || undefined}
+        bulkCount={isBulkDeleting ? selectedIds.length : undefined}
       />
     </div>
   );

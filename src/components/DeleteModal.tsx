@@ -5,14 +5,16 @@ interface Props {
   onClose: () => void;
   onConfirm: () => void;
   chargeId?: string;
+  bulkCount?: number;
 }
 
-export function DeleteModal({ isOpen, onClose, onConfirm, chargeId }: Props) {
+export function DeleteModal({ isOpen, onClose, onConfirm, chargeId, bulkCount }: Props) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
       <div className="bg-white rounded-[2rem] w-full max-w-sm shadow-2xl shadow-rose-900/20 border border-white overflow-hidden relative animate-slide-up">
+        
         <button 
           onClick={onClose}
           className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-2.5 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-slate-200 active:scale-95 z-10"
@@ -29,10 +31,16 @@ export function DeleteModal({ isOpen, onClose, onConfirm, chargeId }: Props) {
             </div>
           </div>
           
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Delete Charge?</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">
+            {bulkCount ? 'Delete Multiple?' : 'Delete Charge?'}
+          </h2>
           
           <p className="text-slate-500 text-sm mb-8 px-2 leading-relaxed">
-            Are you sure you want to permanently delete charge <strong className="text-slate-700 font-mono bg-slate-100/80 px-2 py-1 rounded-lg border border-slate-200/60 shadow-sm inline-block mt-1">{chargeId}</strong>? <br/>This action cannot be undone.
+            {bulkCount ? (
+              <>Are you sure you want to permanently delete <strong className="text-slate-700 font-mono bg-slate-100/80 px-2 py-1 rounded-lg border border-slate-200/60 shadow-sm inline-block mt-1">{bulkCount} selected charges</strong>? <br/>This action cannot be undone.</>
+            ) : (
+              <>Are you sure you want to permanently delete charge <strong className="text-slate-700 font-mono bg-slate-100/80 px-2 py-1 rounded-lg border border-slate-200/60 shadow-sm inline-block mt-1">{chargeId}</strong>? <br/>This action cannot be undone.</>
+            )}
           </p>
 
           <div className="flex w-full gap-3">
